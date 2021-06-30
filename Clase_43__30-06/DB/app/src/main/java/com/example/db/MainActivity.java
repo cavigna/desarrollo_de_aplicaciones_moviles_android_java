@@ -2,20 +2,26 @@ package com.example.db;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ActionBar;
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.android.material.snackbar.Snackbar;
+
 public class MainActivity extends AppCompatActivity {
     private EditText edCodigo, edNombre, edPrecio;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        this.getSupportActionBar().hide();
 
         edCodigo = findViewById(R.id.codigo);
         edNombre = findViewById(R.id.nombre);
@@ -24,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void crear(View view) {
-        AdminDB admin = new AdminDB(this, "Productos", null, 1);
+        AdminDB admin = new AdminDB(this, "producto", null, 1);
         SQLiteDatabase base = admin.getWritableDatabase();
 
         String codigo = edCodigo.getText().toString();
@@ -48,6 +54,39 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Completa todo!! Vago",
                     Toast.LENGTH_LONG).show();
         }
+    }
+
+    public void buscar(View view) {
+        AdminDB admin = new AdminDB(this, "producto", null, 1);
+        SQLiteDatabase base = admin.getWritableDatabase();
+
+        String codigo = edCodigo.getText().toString();
+
+        if (!codigo.isEmpty()) {
+            Cursor fila = base.rawQuery("select nombre, precio from  producto where codigo="+ codigo, null);
+            if (fila.moveToFirst()) {
+                edNombre.setText(fila.getString(0));
+                edPrecio.setText(fila.getString(1));
+                base.close();
+            } else {
+                Toast.makeText(this, "No está", Toast.LENGTH_LONG).show();
+
+            }
+
+        } else {
+            Toast.makeText(this, "Ingresa el código, gil",
+                    Toast.LENGTH_LONG).show();
+        }
+
+    }
+
+    public void actualizar(View view){
+        Snackbar.make(view,"Todavía no esta implementado", Snackbar.LENGTH_SHORT).show();
+    }
+
+    public void eliminar(View view){
+        Toast.makeText(this, "Todavía no está implementado",
+                Toast.LENGTH_LONG).show();
     }
 }
 
