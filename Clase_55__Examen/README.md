@@ -38,6 +38,7 @@ Consiste en separar la UI (Interfaz Gráfica), de los View Model(Intermediario e
 ## - Asi:
 
 </br>
+
 ![palta](./imagenes/mvvmpalta.jpg)
 
 *  **UI**: Incluye las Activities, solo con los aspectos visuales.
@@ -742,6 +743,8 @@ Hacemos las conexiones con el ViewModel y con el recyclerView, y por supuesto un
         });
 
 ```
+### Fijate que solo usamos una instancia del viewModel, para dos recyclerviews diferentes. Esto nos permite modificar solamente ese Modelo sin la necesidad de retocar toda la app
+
 # RESULTADO
 ![](./imagenes/listado.png)
 
