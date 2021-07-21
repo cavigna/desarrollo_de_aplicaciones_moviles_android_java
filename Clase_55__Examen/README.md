@@ -226,7 +226,7 @@ public abstract class GsDatabase extends RoomDatabase {
 ```
 Puntos a recordar:
 * `@Database(entities = Gasto.class, version = 2, exportSchema = false)`: Hace referencia a la Entidad, y la versión implica modificaciones. Empezé con una version 1, pero luego tuve que agregar una columna total para poder hacer querys(si no, hay ciertas consultas que dan error), entonces tuve que hacer una version 2. 
-* `private static GsDatabase minstance;`: Es un singleton y  consiste en garantizar que una clase solo tenga una instancia. Solo realizamos una única instancia de la db.
+* `private static GsDatabase minstance;`: Es un singleton garanrizando que una clase solo tenga una instancia. Solo realizamos una única instancia de la db.
 * ```java
           if (minstance == null) {
             synchronized (GsDatabase.class){
@@ -324,15 +324,165 @@ public class GsRepositorio {
 ###### Model
 
 ```java
+package com.example.paltapp.model;
+
+import android.app.Application;
+
+import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
+
+import com.example.paltapp.db.Gasto;
+import com.example.paltapp.db.GsRepositorio;
+
+import java.util.List;
+
+public class GsViewModel extends AndroidViewModel {
+
+    //private  List<Gasto> mselectAll;
+    private GsRepositorio mRepository;
+    private final LiveData<List<Gasto>> mAllGasto;
+    private LiveData<Double> mSumaGsCat;
+    private LiveData<Double> mSumAllGastos;
+
+    private LiveData<List<Gasto>> mSumMes;
+
+    private LiveData<Double> mSumaGsCat2;
+    public String categoria;
+
+    public GsViewModel(@NonNull Application application) {
+        super(application);
+        mRepository = new GsRepositorio(application);
+        mAllGasto = mRepository.selectAllGastos();
+
+        mSumaGsCat = mRepository.sumaGastosCategoria();
+        mSumAllGastos = mRepository.sumaAllGs();
+
+
+        mSumaGsCat2 = mRepository.sumaGsCat2(categoria);
+
+        mSumMes = mRepository.gastosMes();
+
+    }
+
+    public LiveData<List<Gasto>> SumMes() {
+        return mSumMes;
+    }
+
+    public LiveData<Double> getSumaGsCat2(String categoria ) {
+        return mRepository.sumaGsCat2(categoria);
+    }
+
+    public LiveData<List<Gasto>> getmAllGasto() {
+        return mAllGasto;
+    }
+
+    public LiveData<Double> getmSumaGsCat() {
+        return mSumaGsCat;
+    }
+
+    public LiveData<Double> SumAllGastos() {
+        return mSumAllGastos;
+    }
+
+    public void insert(Gasto gasto){mRepository.insert(gasto);}
+
+    public void update(Gasto gasto){mRepository.update(gasto);}
+
+    public void delete(Gasto gasto){mRepository.delete(gasto);}
+
+    public void deleteAll(){mRepository.deleteAll();}
+
+    public void selectAll(){mRepository.selectAllGastos();}
+
+}
+```
+
+Bueno, tratemos de  desenmarañar este enredo. Tomemos como guía este esquema:
+
+>        Dao ===> Repositorio ===> Model
+
+Y esta query, para seguir el recorrido:
+```SQL
+SELECT * FROM tabla_gastos
+```
+
+**DAO**
+```JAVA
+    @Query("SELECT * FROM tabla_gastos")
+    LiveData<List<Gasto>> selectAllGastos();
+```
+
+**REPOSITORIO**
+```java
+
+// public class GsRepositorio {
+//     private GsDao gsDao;
+//     private LiveData<List<Gasto>> mAllGastos;
+                /*...*/
+
+//     public GsRepositorio(Application application) {
+//         GsDatabase database = GsDatabase.getDatabase(application);
+//         gsDao = database.gsDao();
+
+        mAllGastos = gsDao.selectAllGastos();
+
+//        }
+     
+
+    public LiveData<List<Gasto>> selectAllGastos() {return mAllGastos;
+    }
+```
+
+**MODEL**
+
+```java
+//public class GsViewModel extends AndroidViewModel {  
+    private final LiveData<List<Gasto>> mAllGasto;
+                /* ... */
+
+//    public GsViewModel(@NonNull Application application) {
+//        super(application);
+//        mRepository = new GsRepositorio(application);
+        mAllGasto = mRepository.selectAllGastos();}
+
+        public LiveData<List<Gasto>> getmAllGasto() {
+        return mAllGasto;
+    }
+``` 
+
+Como podemos ver, partimos desde el Dao, lo pasamos al repositorio y finalmente al Model.
+
+>        Dao ===> Repositorio ===> Model
+
+Dao
+```java
+        @Query("SELECT * FROM tabla_gastos")
+        LiveData<List<Gasto>> selectAllGastos();
+```
+![](/imagenes/arrow.png)
+
+Repositorio
+```java
+ public LiveData<List<Gasto>> selectAllGastos() {return mAllGastos;}
+```  
+</br>
+
+Model
+![](/imagenes/arrow.png) 
+```java
+ public LiveData<List<Gasto>> getmAllGasto() {return mAllGasto;}
 
 ```
 
+### Pero para para!, y que hago con tantas capas de abstracción??. De que me sirve?. Calmate un poco, que en el próximo apartado vamos a ver cuando y como se usa.
 
 
 
-## QuilTerrier
 
-![mock](mock.jpg)
+<!-- ## QuilTerrier
+
+![mock](mock.jpg) -->
 
  
 
