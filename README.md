@@ -764,10 +764,13 @@ Hacemos las conexiones con el ViewModel y con el recyclerView, y por supuesto un
 ## - Por cierto, si llegaste hasta acá primero quiero agradecerte por tomarte el tiempo de leer todo eso. 
 ## - Segundo, como buen porgramador que sos, ya te deberías dar cuenta que tanto en el `Adapter` como el `Holder` no son capas de abstración propias de ROOM si no que del RecyclerView. Eso nomás, no digas que no te avise!
 
-todo el código acá:
+todo el código por acá:
+
+**PaltApp**
 https://github.com/cavigna/Android_Development/tree/main/PaltApp
 
-Por cierto, también trabajé en Quilterrier junto a un grupo fromidable de compañeros.
+**Quilterrier**
+https://github.com/nrubioh/quilterrierApp
  
 
 
