@@ -11,7 +11,7 @@
 </br>
 
 ## Proyecto Final del Módulo | QuilTerrier
-También trabajé en QuilTerrier junto a un **grupo formidable de compañeros/as**:
+Desarrollamos QuilTerrier con un **grupo formidable de compañeros/as**:
 * Aracelli Matta
 * Leonardo Rodenas
 * Yayson Olivares
