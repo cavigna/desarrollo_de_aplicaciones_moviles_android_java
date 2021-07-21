@@ -11,6 +11,11 @@ https://github.com/cavigna/modulo_desarrollo_de_aplicaciones_moviles_android_jav
 </br>
 </br>
 
+Trabajé en dos aplicaciones en paralelo:
+1. ## PaltaApp
+2. ## Quiterrier
+
+
 # PaltaApp
 ![](./imagenes/home.png)
 ![](./imagenes/listado.png)
@@ -23,15 +28,17 @@ Como desafío me propuse usar lo aprendido en clase, junto a otras herramientas 
 2. [Android Room para SQL.](#android-room)
 3. [Recyclerview](#recyclerview)
 
-### Model View ViewModel
+## Model View ViewModel
 
 ![](./imagenes/mvvm.png)
 
 Consiste en separar la UI (Interfaz Gráfica), de los View Model(Intermediario entre Business Logic y UI) de los Model(Business Logic) por medio de un Repositorio( Este ultimo no es Obligatorio, pero sí, sugerido). Esto requiere que en las Activities solo exista código relativo a la UI, o la interfaz gráfica, pero que no, haya nada relativo a la lógica de la App. A su vez, se requieren Holders, ViewModels y Adaptadores para los RecyclerView.  
+### - Entonces, ¿Cómo lo implementaste?
 
-Por ende mi Proyecto quedó con la siguiente estructura:
+## - Asi:
+
 </br>
-![palta](./imagenes/mvvmpalta.JPG)
+![palta](./imagenes/mvvmpalta.jpg)
 
 *  **UI**: Incluye las Activities, solo con los aspectos visuales.
 *  **DB**: Incluye la Clase base **``Gasto.java``**, Su respectivo DAO **``GsDao.java``**, la construcción de la db **``GsDatabase.java``** y el repositorio **``GsRepositorio.java``**
@@ -46,8 +53,11 @@ Se buscó replicar este diagrama:
 
 ![palta](./imagenes/mvvm3.png)
 
+### - Todo muy lindo y muchos gráficos bonitos..., pero, ¿como lo vas a hacer?
 
-### Android Room
+### - Esperá un segundo y no seas impaciente, que ya viene la explicación de Room. Ahí vas a entender un poco más.
+
+## Android Room
 ¿Pero que es este famoso Android Room?
 
 >Room es una librería que abstrae el uso de SQLite al implementar una capa intermedia entre esta base de datos y el resto de la aplicación. De esta forma se evitan los problemas de SQLite sin perder las ventajas de su uso. 
@@ -161,7 +171,7 @@ En este caso la Query, es solo un número, por ende, es simplemente un Double.
 
 #### Room DataBase
 
-Es el punto de entrada principal para comunicar el resto de paltaApp con el esquema relacional de datos.Esta clase nos oculta la implementación de SQLiteOpenHelper para facilitarnos el acceso a la base de datos.
+Es el punto de entrada principal para comunicar el resto de paltaApp con el esquema relacional de datos. Esta clase nos oculta la implementación de SQLiteOpenHelper para "*facilitarnos*" (si.., claro) el acceso a la base de datos.
 ```java
 package com.example.paltapp.db;
 
@@ -230,7 +240,7 @@ public abstract class GsDatabase extends RoomDatabase {
 ```
 Puntos a recordar:
 * `@Database(entities = Gasto.class, version = 2, exportSchema = false)`: Hace referencia a la Entidad, y la versión implica modificaciones. Empezé con una version 1, pero luego tuve que agregar una columna total para poder hacer querys(si no, hay ciertas consultas que dan error), entonces tuve que hacer una version 2. 
-* `private static GsDatabase minstance;`: Es un singleton garanrizando que una clase solo tenga una instancia. Solo realizamos una única instancia de la db.
+* `private static GsDatabase minstance;`: Es un singleton garantizando que una clase solo tenga una instancia. Solo realizamos una única instancia de la db.
 * ```java
           if (minstance == null) {
             synchronized (GsDatabase.class){
@@ -245,9 +255,9 @@ Puntos a recordar:
   Si no existe una instancia de la db, entonces, construimos una incluyendo un callBack que permite crear dummy data(para que la db este con algunos datos.)
 
 #### Repositorio | Model
-Estas dos clases las presento juntas, ya que el repositorio no es obligatorio, es una recomendación de Google a la hora de implementar MVVM, generando una capa mas de abstración. Veremos que el código se repite en estas clases  
+Estas dos clases las presento juntas, ya que básicamente repiten sus funciones, pero considerando aunque un repositorio no es obligatorio, es una recomendación de Google a la hora de implementar MVVM, generando una capa mas de abstración. Si..., capaz de abstración..., facilitar el acceso a la base de datos..., claro....
 
-##### Repositorio
+#### Repositorio
 ```java
 ackage com.example.paltapp.db;
 
@@ -325,7 +335,7 @@ public class GsRepositorio {
     }
 ```
 
-###### Model
+#### Model
 
 ```java
 package com.example.paltapp.model;
@@ -479,12 +489,13 @@ Model
 
 ```
 
-### Pero para para!, y que hago con tantas capas de abstracción??. De que me sirve?. Calmate un poco, que en el próximo apartado vamos a ver cuando y como se usa.
+## - Pero...,  para, para!; y que hago con tantas capas de abstracción??. De que me sirven?.
+## - Calmate un poco, que en el próximo apartado vamos a ver cuando y como se usa.
 </br>
 </br>
 </br>
 
-### RecyclerView
+## RecyclerView
 ![](./imagenes/rexp.jpg)
 
 </br>
@@ -558,7 +569,8 @@ public class GsRecyclerViewHolder extends RecyclerView.ViewHolder {
     }
 }
 ```
-Acá hay dos cosas a destacar:
+## Te acordás de las capas de abstracción? Bueno, este es otro paso más para llegar a usarlas finalmente. Si otra capa más, pero es la última, te lo prometo....
+
 
 ```java
     public void bindCategoria(String cate){
@@ -569,8 +581,10 @@ Acá hay dos cosas a destacar:
         textView_monto.setText(format.format(amount)); }
 
 ```
-##### Te acordás de las capas de abstracción? Bueno, este es otro paso más para llegar a usarlas finalmente. Si otra capa más, pero es la última, te lo prometo.
 Aca hacemos un *bind*, una unión entre la UI, en este caso un textView, y definimos el texto con un setText en función al elemento de la lista.
+
+
+
 
 #### Adapter
 
@@ -656,7 +670,8 @@ LiveData<List<Gasto>>
 Si lo pensamos como un for loop de un array,  comienza por el primer elemento, que sería `getItem(position)`, o sea la posición 0.Entonces current es el Gasto por el cual pasa el loop, en la primera iteración como dijimos antes será 0.
 Y luego obetenemos los datos con los getters que definimos en la `@Entity`Gasto. 
 
-#### Listo....No entendí nada, tanto quilombo, como queda la cosa??. Tranqui, te lo muestro en unas imagenes
+## - Listo....No entendí nada, tanto quilombo, y  al final.... como queda la cosa??.
+## - Tranqui, te lo muestro en unas imagenes
 
 ![](./imagenes/row_item.jpg)
 
@@ -680,7 +695,8 @@ public void bindCategoria(String cate){
     public void bindMonto(Double amount){
         textView_monto.setText(format.format(amount)); }
 ```
-#### Pero pero, y la app, como quedó?. Tranqui panki, queda otra cosa más! Viste que habia que separar la UI de la logica, veamos la UI.
+## - Pero pero, y la app, ¿Como quedó?. 
+## - Tranqui panki, queda otra cosa más! ¿Te acordás  que había que separar la UI de la logica? Hasta ahora solo vimos lógica, vamos a la UI.
 
 ### Activity
 ```java
@@ -726,13 +742,16 @@ Hacemos las conexiones con el ViewModel y con el recyclerView, y por supuesto un
         });
 
 ```
-Después quedaría asi:
+# RESULTADO
 ![](./imagenes/listado.png)
 
-# RESULTADO
+
 ![](./imagenes/listadosmes.png)
 
 ![](./imagenes/agregar.png)
+
+## - Por cierto, si llegaste hasta acá primero quiero agradecerte por tomarte el tiempo de leer todo eso. 
+## - Segundo, como buen porgramador que sos, ya te deberías dar cuenta que tanto en el `Adapter` como el `Holder` no son capas de abstración propias de ROOM si no que del RecyclerView. Eso nomás, no digas que no te avise
 
 todo el código acá:
 https://github.com/cavigna/Android_Development/tree/main/PaltApp
