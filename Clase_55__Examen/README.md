@@ -7,17 +7,21 @@ https://github.com/cavigna/modulo_desarrollo_de_aplicaciones_moviles_android_jav
 </br>
 
 # EXAMEN  |  Clase 55 | 19-07
+
 </br>
 </br>
 
 # PaltaApp
 ![](./imagenes/home.png)
+![](/imagenes/listado.png)
+![](/imagenes/listadosmes.png)
+![](/imagenes/agregar.png)
 Siguiendo los lineamientos del profesor, construí una app que llevara la cuenta de los gastos, y que el usuario pueda agregarlos o eliminarlos junto a una vista que permita comparar mes a mes y le agregue otra vista con los ultimos gastos.
 
 Como desafío me propuse usar lo aprendido en clase, junto a otras herramientas que no fueron impartidas, pero que son imprescindibles en el desarrollo de aplicaciones en Android, entre ellas destaco a **RecyclerView, arquitectura MVVM, y el uso de Jetpack Room** en oposición a SQlite directo. Por ende, explicaré lo siguiente:
 1. [Diseñar la App con Arquitectura ModelView ViewModel (MVVM)](#model-view-viewmodel)
 2. [Android Room para SQL.](#android-room)
-3. Recyclerview
+3. [Recyclerview](#recyclerview)
 
 ### Model View ViewModel
 
@@ -476,14 +480,262 @@ Model
 ```
 
 ### Pero para para!, y que hago con tantas capas de abstracción??. De que me sirve?. Calmate un poco, que en el próximo apartado vamos a ver cuando y como se usa.
+</br>
+</br>
+</br>
+
+### RecyclerView
+![](/imagenes/rexp.jpg)
+
+</br>
+</br>
+Bueno, ya sabemos que es, veamos un diagrama que nos explique como se implementa:
+
+![](/imagenes/recydia.png)
+
+> Listo, y ahora qué?.
+
+Ahora veamos como se implementó.
+#### ViewHolder
+```java
+package com.example.paltapp.holder;
+/*...*/
+
+public class GsRecyclerViewHolder extends RecyclerView.ViewHolder {
+    private TextView textView_categoria, textView_monto;
+    private ImageView imageView_categoria;
+    private NumberFormat format = NumberFormat.getCurrencyInstance();
+
+    public GsRecyclerViewHolder(@NonNull View itemView) {
+        super(itemView);
+        textView_categoria = itemView.findViewById(R.id.textView_categoria_list);
+        textView_monto = itemView.findViewById(R.id.textView_monto_item);
+        imageView_categoria = itemView.findViewById(R.id.image_categoria);
+
+    }
+
+    public void bindCategoria(String cate){
+        textView_categoria.setText(cate);}
+
+
+    public void bindMonto(Double amount){
+        textView_monto.setText(format.format(amount)); }
+
+    //método que cambia el ícono en función a la caegoria
+
+    public void bindImage(String imagenCatgeoria){
+        switch (imagenCatgeoria){
+            case "Compras":
+                imageView_categoria.setImageResource(R.drawable.ic_baseline_shopping_cart_24);
+                break;
+            case "Hogar":// transporte, ocio, salud, otros ingreso
+                imageView_categoria.setImageResource(R.drawable.ic_round_home_work_24);
+                break;
+            case "Transporte":
+                imageView_categoria.setImageResource(R.drawable.ic_baseline_directions_transit_24);
+                break;
+            case "Ocio":
+                imageView_categoria.setImageResource(R.drawable.ic_baseline_videogame_asset_24);
+                break;
+            case "Salud":
+                imageView_categoria.setImageResource(R.drawable.ic_round_local_hospital_24);
+                break;
+            case "Otros":
+                imageView_categoria.setImageResource(R.drawable.ic_avocado_24);
+                break;
+            default:
+                imageView_categoria.setImageResource(R.drawable.ic_avocado_24);
+                break;
+
+        }
+
+    }
+
+    public static GsRecyclerViewHolder create(ViewGroup parent) {
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.row_item, parent, false);
+        return new GsRecyclerViewHolder(view);
+    }
+}
+```
+Acá hay dos cosas a destacar:
+
+```java
+    public void bindCategoria(String cate){
+        textView_categoria.setText(cate);}
+
+
+    public void bindMonto(Double amount){
+        textView_monto.setText(format.format(amount)); }
+
+```
+##### Te acordás de las capas de abstracción? Bueno, este es otro paso más para llegar a usarlas finalmente. Si otra capa más, pero es la última, te lo prometo.
+Aca hacemos un *bind*, una unión entre la UI, en este caso un textView, y definimos el texto con un setText en función al elemento de la lista.
+
+#### Adapter
+
+```java
+package com.example.paltapp.adapter;
+
+/*....*/
+
+
+public class GastosListAdapter extends ListAdapter<Gasto, GsRecyclerViewHolder> {
+
+
+    public GastosListAdapter(@NonNull  DiffUtil.ItemCallback<Gasto> diffCallback) {
+        super(diffCallback);
+    }
+
+    @NonNull
+
+    @Override
+    public GsRecyclerViewHolder onCreateViewHolder(@NonNull  ViewGroup parent, int viewType) {
+        return GsRecyclerViewHolder.create(parent);
+
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull GsRecyclerViewHolder holder, int position) {
+        Gasto current = getItem(position);
+        holder.bindCategoria(current.getNombre());
+        holder.bindMonto(current.getMonto());
+        holder.bindImage(current.getCategoria());
+    }
+
+    public static class GsDiff extends DiffUtil.ItemCallback<Gasto>{
+
+        @Override
+        public boolean areItemsTheSame(@NonNull Gasto oldItem, @NonNull  Gasto newItem) {
+            return oldItem == newItem;
+        }
+
+        @Override
+        public boolean areContentsTheSame(@NonNull Gasto oldItem, @NonNull  Gasto newItem) {
+            return oldItem.getId() == newItem.getId();
+
+        }
+    }
+}
+```
+Destacados:
+
+```java
+public class GastosListAdapter extends ListAdapter<Gasto, GsRecyclerViewHolder>
+```
+Este adaptador extiende de la clase List adapter que requiere una clase, en nuestro caso la `@Entity` creada en `Gasto.class` junto a un ViewHolder, que lo vamos a explicar más adelante
+</br>
 
 
 
+```java
+    @Override
+    public void onBindViewHolder(@NonNull GsRecyclerViewHolder holder, int position) {
+        Gasto current = getItem(position);
+        holder.bindCategoria(current.getNombre());
+        holder.bindMonto(current.getMonto());
+        holder.bindImage(current.getCategoria());
+    }
+```
 
-<!-- ## QuilTerrier
 
-![mock](mock.jpg) -->
+#### Te acordás de las capas de abstracción? Bueno, este es otro paso más para llegar a usarlas finalmente. Si, te mentí, te dije que era la última, pero no lo es. Que querés que le haga?, anda a quejarte a Google.
+En definitiva lo que hacemos acá es hacer un binding, una union entre nuestro viewmodel y la entidad  con nuestro holder. Recordá que este es un **adaptador**, y como un enchufe, ponemos un un adaptador entre el cable y el toma corriente. En esta analogía, el cable es ViewModel y el toma corriente el ViewHolder.
+Primero hacemos referencia al Gasto. Recordá que está definido como
+```java
+public LiveData<List<Gasto>> getmAllGasto()
+```
+Entonces cuando definimos
+```java
+Gasto current = getItem(position);
+```
+estamos haciendo referenica al Gasto que esta dentro de:
+```java
+LiveData<List<Gasto>> 
+```
+Si lo pensamos como un for loop de un array,  comienza por el primer elemento, que sería `getItem(position)`, o sea la posición 0.Entonces current es el Gasto por el cual pasa el loop, en la primera iteración como dijimos antes será 0.
+Y luego obetenemos los datos con los getters que definimos en la `@Entity`Gasto. 
 
+#### Listo....No entendí nada, tanto quilombo, como queda la cosa??. Tranqui, te lo muestro en unas imagenes
+
+![](/imagenes/row_item.jpg)
+
+Ves que hay dos TextView, estan serán obtenidas y seteadas en:
+**Adapter**
+```java
+    @Override
+    public void onBindViewHolder(@NonNull GsRecyclerViewHolder holder, int position) {
+        Gasto current = getItem(position);
+        holder.bindCategoria(current.getNombre());
+        holder.bindMonto(current.getMonto());
+        holder.bindImage(current.getCategoria());
+    }
+``` 
+**Holder**
+```java    
+public void bindCategoria(String cate){
+        textView_categoria.setText(cate);}
+
+
+    public void bindMonto(Double amount){
+        textView_monto.setText(format.format(amount)); }
+```
+#### Pero pero, y la app, como quedó?. Tranqui panki, queda otra cosa más! Viste que habia que separar la UI de la logica, veamos la UI.
+
+### Activity
+```java
+package com.example.paltapp.ui;
+
+
+
+public class listado extends AppCompatActivity {
+    private GsViewModel mGsViewModel;
+    private GastosListAdapter adapter;
+    RecyclerView recyclerView;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_listado);
+
+        //Conexión con el ViewModel
+        mGsViewModel = new ViewModelProvider(this).get(GsViewModel.class);
+        //Conexión con el RecyclerView
+        recyclerView = findViewById(R.id.recyclerview);
+
+
+        adapter = new GastosListAdapter(new GastosListAdapter.GsDiff());
+
+        recyclerView.setAdapter(adapter);
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        mGsViewModel.getmAllGasto().observe(this, gastos -> {
+            adapter.submitList(gastos);
+        });
+
+    }}
+
+
+```
+Hacemos las conexiones con el ViewModel y con el recyclerView, y por supuesto un observer que va a "observar" a la LiveData. 
+#### Y si, al fin! TODAS ESAS CAPAS DE ABSTRACCION PARA LLEGAR A ESTO:
+```JAVA
+        mGsViewModel.getmAllGasto().observe(this, gastos -> {
+            adapter.submitList(gastos);
+        });
+
+```
+Después quedaría asi:
+![](/imagenes/listado.png)
+
+# RESULTADO
+![](/imagenes/listadosmes.png)
+
+![](/imagenes/agregar.png)
+
+todo el código acá:
+https://github.com/cavigna/Android_Development/tree/main/PaltApp
  
 
 
