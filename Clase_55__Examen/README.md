@@ -13,9 +13,9 @@ https://github.com/cavigna/modulo_desarrollo_de_aplicaciones_moviles_android_jav
 
 # PaltaApp
 ![](./imagenes/home.png)
-![](/imagenes/listado.png)
-![](/imagenes/listadosmes.png)
-![](/imagenes/agregar.png)
+![](./imagenes/listado.png)
+![](./imagenes/listadosmes.png)
+![](./imagenes/agregar.png)
 Siguiendo los lineamientos del profesor, construí una app que llevara la cuenta de los gastos, y que el usuario pueda agregarlos o eliminarlos junto a una vista que permita comparar mes a mes y le agregue otra vista con los ultimos gastos.
 
 Como desafío me propuse usar lo aprendido en clase, junto a otras herramientas que no fueron impartidas, pero que son imprescindibles en el desarrollo de aplicaciones en Android, entre ellas destaco a **RecyclerView, arquitectura MVVM, y el uso de Jetpack Room** en oposición a SQlite directo. Por ende, explicaré lo siguiente:
@@ -25,7 +25,7 @@ Como desafío me propuse usar lo aprendido en clase, junto a otras herramientas 
 
 ### Model View ViewModel
 
-![](/imagenes/mvvm.png)
+![](./imagenes/mvvm.png)
 
 Consiste en separar la UI (Interfaz Gráfica), de los View Model(Intermediario entre Business Logic y UI) de los Model(Business Logic) por medio de un Repositorio( Este ultimo no es Obligatorio, pero sí, sugerido). Esto requiere que en las Activities solo exista código relativo a la UI, o la interfaz gráfica, pero que no, haya nada relativo a la lógica de la App. A su vez, se requieren Holders, ViewModels y Adaptadores para los RecyclerView.  
 
@@ -55,7 +55,7 @@ Se buscó replicar este diagrama:
 
 Entonces tenemos:
 
-![](/imagenes/roomarquitectura2.png)
+![](./imagenes/roomarquitectura2.png)
 
 #### Entity
 En *PaltApp* la entidad consiste en una clase con la anotación: ```@Entity```, en mi caso fue la de ``Gasto.java``:
@@ -90,7 +90,7 @@ public class Gasto {
 
  Esta clase cumple la función de un mapeado del comando ``CREATE`` de una tabla en SQLite. Por ende, Cada uno de los Atributos será una de las columnas de la tabla:
 
-![](/imagenes/dbcol.jpg)
+![](./imagenes/dbcol.jpg)
 
 #### DAO
 
@@ -464,7 +464,7 @@ Dao
         @Query("SELECT * FROM tabla_gastos")
         LiveData<List<Gasto>> selectAllGastos();
 ```
-![](/imagenes/arrow.png)
+![](./imagenes/arrow.png)
 
 Repositorio
 ```java
@@ -473,7 +473,7 @@ Repositorio
 </br>
 
 Model
-![](/imagenes/arrow.png) 
+![](./imagenes/arrow.png) 
 ```java
  public LiveData<List<Gasto>> getmAllGasto() {return mAllGasto;}
 
@@ -485,13 +485,13 @@ Model
 </br>
 
 ### RecyclerView
-![](/imagenes/rexp.jpg)
+![](./imagenes/rexp.jpg)
 
 </br>
 </br>
 Bueno, ya sabemos que es, veamos un diagrama que nos explique como se implementa:
 
-![](/imagenes/recydia.png)
+![](./imagenes/recydia.png)
 
 > Listo, y ahora qué?.
 
@@ -658,7 +658,7 @@ Y luego obetenemos los datos con los getters que definimos en la `@Entity`Gasto.
 
 #### Listo....No entendí nada, tanto quilombo, como queda la cosa??. Tranqui, te lo muestro en unas imagenes
 
-![](/imagenes/row_item.jpg)
+![](./imagenes/row_item.jpg)
 
 Ves que hay dos TextView, estan serán obtenidas y seteadas en:
 **Adapter**
@@ -727,12 +727,12 @@ Hacemos las conexiones con el ViewModel y con el recyclerView, y por supuesto un
 
 ```
 Después quedaría asi:
-![](/imagenes/listado.png)
+![](./imagenes/listado.png)
 
 # RESULTADO
-![](/imagenes/listadosmes.png)
+![](./imagenes/listadosmes.png)
 
-![](/imagenes/agregar.png)
+![](./imagenes/agregar.png)
 
 todo el código acá:
 https://github.com/cavigna/Android_Development/tree/main/PaltApp
