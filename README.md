@@ -5,7 +5,9 @@
 ## Mi primera App en Java
 ![](./imagenes/imageResta.jpg)
 ## Proyecto Final del Módulo | PaltaApp
-![](./imagenes/home.png)
+![](./imagenes/paltapp.gif)
+
+
 
 </br>
 </br>
@@ -26,9 +28,8 @@ Vayan a darse una vuelta por el [repositorio](https://github.com/nrubioh/quilter
 
 # PaltaApp
 
-![](./imagenes/listado.png)
-![](./imagenes/listadosmes.png)
-![](./imagenes/agregar.png)
+
+
 
 Siguiendo el desafío propuesto por el Profesor, desarrollé una app que llevara la cuenta de los gastos, y que el usuario pueda agregarlos o eliminarlos junto a una vista que permita comparar mes a mes y le agregue otra vista con los ultimos gastos.
 
@@ -761,7 +762,7 @@ Hacemos las conexiones con el ViewModel y con el recyclerView, y por supuesto un
 ![](./imagenes/listadosmes.png)
 
 ![](./imagenes/agregar.png)
-
+![](./imagenes/home.png)
 ## - Por cierto, si llegaste hasta acá primero quiero agradecerte por tomarte el tiempo de leer todo eso. 
 ## - Segundo, como buen porgramador que sos, ya te deberías dar cuenta que tanto en el `Adapter` como el `Holder` no son capas de abstración propias de ROOM si no que del RecyclerView. Eso nomás, no digas que no te avise!
 
